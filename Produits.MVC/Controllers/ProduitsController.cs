@@ -2,13 +2,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Produits.MVC.Interfaces;
 using Produits.MVC.Models;
-using Produits.MVC.Services;
 
 namespace Produits.MVC.Controllers
 {
     public class ProduitsController : Controller
     {
-        private GestionProduits _gestionProduits = new GestionProduits();
+        private readonly IProduit _gestionProduits;
+
+        public ProduitsController(IProduit gestionProduits)
+        {
+            _gestionProduits = gestionProduits;
+        }
 
         public async Task<ActionResult> Accueil()
         {

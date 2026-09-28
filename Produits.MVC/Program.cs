@@ -1,3 +1,5 @@
+﻿using Produits.MVC.Interfaces;
+using Produits.MVC.Services;
 
 
 using System.Globalization;
@@ -14,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IProduit, GestionProduits>();
 
 
 var app = builder.Build();

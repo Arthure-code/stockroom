@@ -6,7 +6,15 @@ namespace Produits.MVC.Services
 {
     public class GestionProduits : IProduit
     {
-        private string chemin = @".\produits.csv";
+        private readonly string chemin;
+
+        // Le fichier est nomme dans la configuration et cherche a la racine
+        // du site, plutot qu'ecrit en dur et dependant du dossier courant.
+        public GestionProduits(IWebHostEnvironment environnement, IConfiguration configuration)
+        {
+            string nomFichier = configuration["Catalogue:Fichier"] ?? "produits.csv";
+            chemin = Path.Combine(environnement.ContentRootPath, nomFichier);
+        }
         public async Task<List<Produit>> InitialisationAsync()
         {
             List<Produit> produits = new List<Produit>();
