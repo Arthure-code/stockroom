@@ -1,166 +1,104 @@
-﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Produits.MVC.Interfaces;
 using Produits.MVC.Models;
 
 namespace Produits.MVC.Controllers
 {
+    /// <summary>
+    /// Recoit les demandes, appelle le service et choisit la vue. Aucune
+    /// regle du catalogue ne vit ici.
+    /// </summary>
     public class ProduitsController : Controller
     {
-        private readonly IProduit _gestionProduits;
+        private readonly IProduitService _service;
 
-        public ProduitsController(IProduit gestionProduits)
+        public ProduitsController(IProduitService service)
         {
-            _gestionProduits = gestionProduits;
+            _service = service;
         }
 
-        public async Task<ActionResult> Accueil()
+        public async Task<IActionResult> Accueil()
         {
-            var liste = await _gestionProduits.GetAllProduitsAsync();
-
-            var vm = new AccueilViewModel();
-            vm.Vedettes = liste.Where(p => p.Vedette == true && p.Quantite != 0).ToList();
-
-                vm.ProduitsFiltres = liste.FindAll(p => !p.Vedette && p.Quantite != 0).ToList();
-
-            return View(vm);
+            return View(await _service.ObtenirAccueilAsync());
         }
 
-        // GET: ProduitsController/Create
-        public ActionResult Create()
+        public async Task<IActionResult> Filtre(string libelle)
+        {
+            return View(nameof(Accueil), await _service.ObtenirAccueilAsync(libelle));
+        }
+
+        public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Produit produit)
+        public async Task<IActionResult> Create(Produit produit)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var liste = await _gestionProduits.GetAllProduitsAsync();
-
-                if (produit.Vedette == true)
-                {
-                    foreach (var p in liste)
-                    {
-                        p.Vedette = false;
-                    }
-                }
-
-                produit.Id = liste.Any() ? liste.Max(x => x.Id) + 1 : 1;
-                liste.Add(produit);
-                await _gestionProduits.EnregistreToutAsync(liste);
-
-                return RedirectToAction(nameof(Accueil));
+                return View(produit);
             }
 
-            return View(produit);
-        }
-
-        // GET: ProduitsController/Edit/5
-        public async Task<ActionResult> Edit(int id)
-        {
-            var liste = await _gestionProduits.GetAllProduitsAsync();
-            Produit? produitfiltre = liste.SingleOrDefault(p => p.Id == id);
-            return View(produitfiltre);
-        }
-
-        // POST: ProduitsController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, Produit produit)
-        {
-            var liste = await _gestionProduits.GetAllProduitsAsync();
-            Produit? produitfiltre = liste.SingleOrDefault(p => p.Id == produit.Id);
-
-            if (produitfiltre != null && produitfiltre.Vedette == true)
-            {
-                ModelState.AddModelError(string.Empty, "Un produit vedette ne peut pas être modifier.");
-                return View(produitfiltre);
-            }
-
-            if (ModelState.IsValid)
-            {
-                if (produit.Vedette == true)
-                {
-                    foreach (var p in liste)
-                    {
-                        p.Vedette = false;
-                    }
-                }
-
-                produitfiltre.Nom = produit.Nom;
-                produitfiltre.Description = produit.Description;
-                produitfiltre.Quantite = produit.Quantite;
-                produitfiltre.Vedette = produit.Vedette;
-                produitfiltre.Prix = produit.Prix;
-                produitfiltre.Image = produit.Image;
-                await _gestionProduits.EnregistreToutAsync(liste);
-
-                return RedirectToAction(nameof(Accueil));
-            }
-
-            return NotFound();
-        }
-
-        // GET: ProduitsController/Delete/5
-        public async Task<ActionResult> Delete(int id)
-        {
-            var produit = await _gestionProduits.GetProduiByIdAsync(id);
-
-            if (produit == null)
-            {
-                return NotFound();
-            }
-
-            return View(produit);
-        }
-
-        // POST: ProduitsController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id, Produit produit)
-        {
-            var liste = await _gestionProduits.GetAllProduitsAsync();
-            var produitfiltr = liste.SingleOrDefault(p => p.Id == id);
-
-            if (produitfiltr != null && produitfiltr.Vedette == true)
-            {
-                ModelState.AddModelError(string.Empty, "Un produit vedette ne peut pas être supprimé.");
-                return View(produitfiltr);
-            }
-            else if (produitfiltr != null)
-            {
-                liste.Remove(produitfiltr);
-                await _gestionProduits.EnregistreToutAsync(liste);
-            }
-            else
-            {
-                return NotFound();
-            }
-
+            await _service.AjouterAsync(produit);
             return RedirectToAction(nameof(Accueil));
         }
 
-        public async Task<ActionResult> Filtre(string libelle)
+        public async Task<IActionResult> Edit(int id)
         {
-            var liste = await _gestionProduits.GetAllProduitsAsync();
-
-            var vm = new AccueilViewModel();
-
-            vm.Vedettes = liste
-                .Where(p => p.Vedette)
-                .ToList();
-
-            vm.ProduitsFiltres = liste
-                .Where(p => !p.Vedette && p.Quantite != 0)
-                .Where(p => string.IsNullOrWhiteSpace(libelle) || p.Nom.Contains(libelle, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            return View(nameof(Accueil), vm);
+            var produit = await _service.ObtenirParIdAsync(id);
+            return produit == null ? NotFound() : View(produit);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Produit produit)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(produit);
+            }
 
+            var resultat = await _service.ModifierAsync(produit);
+            if (resultat.Reussi)
+            {
+                return RedirectToAction(nameof(Accueil));
+            }
+
+            if (resultat.Message == null)
+            {
+                return NotFound();
+            }
+
+            ModelState.AddModelError(string.Empty, resultat.Message);
+            return View(produit);
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var produit = await _service.ObtenirParIdAsync(id);
+            return produit == null ? NotFound() : View(produit);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id, Produit produit)
+        {
+            var resultat = await _service.SupprimerAsync(id);
+            if (resultat.Reussi)
+            {
+                return RedirectToAction(nameof(Accueil));
+            }
+
+            if (resultat.Message == null)
+            {
+                return NotFound();
+            }
+
+            var existant = await _service.ObtenirParIdAsync(id);
+            ModelState.AddModelError(string.Empty, resultat.Message);
+            return View(existant);
+        }
     }
 }

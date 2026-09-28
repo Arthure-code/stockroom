@@ -1,27 +1,32 @@
-﻿using Produits.MVC.Interfaces;
+using Produits.MVC.Interfaces;
 using Produits.MVC.Models;
 using System.Text;
 
-namespace Produits.MVC.Services
+namespace Produits.MVC.Repositories
 {
-    public class GestionProduits : IProduit
+    /// <summary>
+    /// Le fichier CSV : une ligne par produit, sept champs separes par des
+    /// points-virgules, sans entete. Les lectures et les ecritures sont
+    /// asynchrones, avec StreamReader et StreamWriter.
+    /// </summary>
+    public class ProduitRepository : IProduitRepository
     {
         private readonly string chemin;
 
         // Le fichier est nomme dans la configuration et cherche a la racine
         // du site, plutot qu'ecrit en dur et dependant du dossier courant.
-        public GestionProduits(IWebHostEnvironment environnement, IConfiguration configuration)
+        public ProduitRepository(IWebHostEnvironment environnement, IConfiguration configuration)
         {
             string nomFichier = configuration["Catalogue:Fichier"] ?? "produits.csv";
             chemin = Path.Combine(environnement.ContentRootPath, nomFichier);
         }
-        public async Task<List<Produit>> InitialisationAsync()
+
+        public async Task<List<Produit>> LireTousAsync()
         {
             List<Produit> produits = new List<Produit>();
 
             if (!File.Exists(chemin))
             {
-                File.Create(chemin).Close();
                 return produits;
             }
 
@@ -46,39 +51,20 @@ namespace Produits.MVC.Services
                     produits.Add(produit);
                 }
             }
-                return produits;
-            }
-        public async Task<List<Produit>> GetAllProduitsAsync()
-        {
-            return await InitialisationAsync();
+
+            return produits;
         }
 
-
-        // Écrase le fichier existant et enregistre une nouvelle liste de produits
-        public async Task EnregistreToutAsync(List<Produit> produits)
+        public async Task EcrireTousAsync(IEnumerable<Produit> produits)
         {
-            using (StreamWriter item = new StreamWriter(chemin, false, Encoding.UTF8))
+            using (StreamWriter redacteur = new StreamWriter(chemin, false, Encoding.UTF8))
             {
                 foreach (var produit in produits)
                 {
-                    await item.WriteLineAsync($"{produit.Id};{produit.Nom};{produit.Description};{produit.Prix};{produit.Quantite};{produit.Image};{produit.Vedette}");
+                    await redacteur.WriteLineAsync(
+                        $"{produit.Id};{produit.Nom};{produit.Description};{produit.Prix};{produit.Quantite};{produit.Image};{produit.Vedette}");
                 }
             }
         }
-
-        public async Task<Produit?> GetProduiByIdAsync(int id)
-        {
-            var produits = await GetAllProduitsAsync();
-            return produits.SingleOrDefault(x => x.Id == id);
-        }
-
-        public async Task EnregistreProduitAsync(Produit produit)
-        {
-            using (StreamWriter item = new StreamWriter(chemin, true, Encoding.UTF8))
-            {
-                await item.WriteLineAsync($"{produit.Id};{produit.Nom};{produit.Description};{produit.Prix};{produit.Quantite};{produit.Image};{produit.Vedette}");
-            }
-        }
-
     }
 }
