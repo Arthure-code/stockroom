@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Produits.MVC</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Produits.MVC.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="site-header sticky-top py-1">
+            <div class="container-fluid">
+                <div class="container d-flex flex-column flex-md-row justify-content-between">
+
+                    <a class="py-2 d-none d-md-inline-block" asp-action="Accueil">Catalogue de produits</a>
+
+                    <a class="py-2 d-none d-md-inline-block" asp-action="Create">Ajouter un produit</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 Stockroom
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

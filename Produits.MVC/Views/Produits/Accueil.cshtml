@@ -1,0 +1,88 @@
+﻿@model AccueilViewModel
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page - Produits.MVC</title>
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/site.css?v=fqNzvpQHmFevv4ur5uHdxcMlQ1REpohNErHzjgIVhXE" />
+    <link rel="stylesheet" href="/Produits.MVC.styles.css?v=adKQ1o58yXlPEErKxyjQVaEFR32dapdurXUqG7Qz5dQ" />
+</head>
+<body>
+    <header></header>
+    <div class="container">
+        <main role="main" class="pb-3">
+
+            <section class="jumbotron text-center">
+                <div class="container">
+
+                    @foreach (var item in Model.Vedettes)
+                    {
+                        <h1 class="jumbotron-heading">Produit vedette : @Html.DisplayFor(modelItem => item.Nom)</h1>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <img class="card-img-top" src="@Url.Content("~/images/" + item.Image)" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Image de @item.Nom" />
+                            </div>
+                            <div class="col-md-7">
+                                <p class="lead text-muted">@Html.DisplayFor(modelItem => item.Description)</p>
+                                <div class="btn-group">
+                                    @Html.ActionLink("Modifier", "Edit", new { id = item.Id }, new { @class = "btn btn-sm btn-outline-secondary" })
+                                    @Html.ActionLink("Supprimer", "Delete", new { id = item.Id }, new { @class = "btn btn-sm btn-outline-secondary" })
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+            <form asp-action="Filtre" method="get" class="d-flex justify-content-center">
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label for="libelle" class="col-form-label">Filtre selon le libellé</label>
+                    </div>
+                    <div class="col-auto">
+                        <input id="libelle" name="libelle" class="form-control" type="text" value="@Context.Request.Query["libelle"]" />
+                    </div>
+                    <div class="col-auto">
+                        <input class="btn btn-primary" type="submit" value="Filtrer" />
+                    </div>
+                </div>
+            </form>
+            <div class="album py-5 bg-light">
+                <div class="container">
+                    <div class="row">
+                        @foreach (var item in Model.ProduitsFiltres)
+                        {
+                            <div class="col-md-4">
+                                <div class="card mb-4 box-shadow">
+                                    <h1 class="jumbotron-heading"> @Html.DisplayFor(modelItem => item.Nom)</h1>
+                                    <img class="card-img-top" src="@Url.Content("~/images/" + item.Image)" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Image de @item.Nom" />
+                                    <div class="card-body">
+                                        <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="btn-group">
+                                                @Html.ActionLink("Modifier", "Edit", new { id = item.Id }, new { @class = "btn btn-sm btn-outline-secondary" })
+                                                @Html.ActionLink("Supprimer", "Delete", new { id = item.Id }, new { @class = "btn btn-sm btn-outline-secondary" })
+                                            </div>
+                                            <small class="text-muted"> @item.Prix.ToString("C")</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    <footer class="footer text-muted">
+    </footer>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/site.js?v=4q1jwFhaPaZgr8WAUSrux6hAuh0XDg9kPS3xIVq36I0"></script>
+
+</body>
+</html>
+

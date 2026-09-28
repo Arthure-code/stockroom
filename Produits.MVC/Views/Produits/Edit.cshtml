@@ -1,0 +1,106 @@
+﻿@model Produit
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit - Produits.MVC</title>
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/site.css?v=fqNzvpQHmFevv4ur5uHdxcMlQ1REpohNErHzjgIVhXE" />
+    <link rel="stylesheet" href="/Produits.MVC.styles.css?v=adKQ1o58yXlPEErKxyjQVaEFR32dapdurXUqG7Qz5dQ" />
+</head>
+<body>
+    <header></header>
+    <div class="container">
+        <main role="main" class="pb-3">
+
+            <h1>Mettre à jour</h1>
+            <hr />
+            <div class="row">
+                <div class="col-md-4">
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Id">Identifiant</label>
+                            <input asp-for="Id" class="form-control" disabled />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Nom">Nom</label>
+                            <input asp-for="Nom" class="form-control" required />
+                            <span asp-validation-for="Nom" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Description">Description</label>
+                            <input asp-for="Description" class="form-control" required />
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Prix">Prix</label>
+                            <input asp-for="Prix" class="form-control" type="number" required />
+                            <span asp-validation-for="Prix" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Quantite">Quantit&#xE9;</label>
+                            <input asp-for="Quantite" class="form-control" type="number" min="0" max="150" required />
+                            <span asp-validation-for="Quantite" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Image">Image</label>
+                            <input asp-for="Image" class="form-control" required />
+                            <span asp-validation-for="Image" class="text-danger"></span>
+                        </div>
+
+                        @if (@Model.Vedette == true)
+                        {
+                            <div class="form-group form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" asp-for="Vedette" disabled /> Est produit vedette
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Save" class="btn btn-primary" /> |
+                                <a class="btn btn-outline-secondary" asp-action="Accueil">Liste des produits</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" asp-for="Vedette" /> Est produit vedette
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Save" class="btn btn-primary" /> |
+                                <a class="btn btn-outline-secondary" asp-action="Accueil">Liste des produits</a>
+                            </div>
+                        }
+
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer text-muted">
+       
+    </footer>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/site.js?v=4q1jwFhaPaZgr8WAUSrux6hAuh0XDg9kPS3xIVq36I0"></script>
+
+    <script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+</body>
+</html>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

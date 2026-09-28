@@ -1,0 +1,60 @@
+﻿@model Produits.MVC.Models.Produit
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Delete - Produits.MVC</title>
+        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/css/site.css?v=fqNzvpQHmFevv4ur5uHdxcMlQ1REpohNErHzjgIVhXE" />
+        <link rel="stylesheet" href="/Produits.MVC.styles.css?v=adKQ1o58yXlPEErKxyjQVaEFR32dapdurXUqG7Qz5dQ" />
+    </head>
+    <body>
+        <header></header>
+        <div  class="container">
+            <main  role="main" class="pb-3">
+
+                <h3>Voulez-vous vraimment supprimer le produit ci-dessous ?</h3>
+                <div>
+                  <hr />
+
+                    <section class="jumbotron text-center">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <img class="card-img-top" src="@Url.Content(@"~/images/"+Model.Image)" alt="Image de @Model.Image" />
+                                </div>
+                                <div class="col-md-7">
+                                    <h1 class="jumbotron-heading">@Html.DisplayFor(model => model.Nom)</h1>
+                                    <p class="lead text-muted">@Html.DisplayFor(model => model.Description)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="row">
+                    <form asp-action="Delete" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="submit" value="Supprimer" class="btn btn-danger"/> |
+                            <a class="btn btn-outline-secondary" asp-action="Accueil"> Liste des produits</a>
+                        </form>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+        <footer class="footer text-muted">
+          
+        </footer>
+        <script src="/lib/jquery/dist/jquery.min.js"></script>
+        <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="/js/site.js?v=4q1jwFhaPaZgr8WAUSrux6hAuh0XDg9kPS3xIVq36I0"></script>
+
+    </body>
+</html>
